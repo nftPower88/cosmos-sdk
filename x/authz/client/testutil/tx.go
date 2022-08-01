@@ -65,6 +65,8 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	// Send some funds to the new account.
 	s.msgSendExec(s.grantee[1])
 
+	s.Require().NoError(s.network.WaitForNextBlock())
+
 	// grant send authorization to grantee2
 	out, err := CreateGrant(val, []string{
 		s.grantee[1].String(),
@@ -102,6 +104,8 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.grantee[3] = s.createAccount("grantee4")
 	s.msgSendExec(s.grantee[3])
 
+	s.Require().NoError(s.network.WaitForNextBlock())
+
 	s.grantee[4] = s.createAccount("grantee5")
 	s.grantee[5] = s.createAccount("grantee6")
 
@@ -122,8 +126,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	)
 	s.Require().NoError(err)
 
-	err = s.network.WaitForNextBlock()
-	s.Require().NoError(err)
+	s.Require().NoError(s.network.WaitForNextBlock())
 
 	var response sdk.TxResponse
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &response), out.String())

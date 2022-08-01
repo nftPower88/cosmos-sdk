@@ -70,6 +70,8 @@ func (s *WithdrawAllTestSuite) TestNewWithdrawAllRewardsGenerateOnly() {
 	)
 	require.NoError(err)
 
+	s.Require().NoError(s.network.WaitForNextBlock())
+
 	// delegate 500 tokens to validator1
 	args := []string{
 		val.ValAddress.String(),
@@ -82,6 +84,7 @@ func (s *WithdrawAllTestSuite) TestNewWithdrawAllRewardsGenerateOnly() {
 	cmd := stakingcli.NewDelegateCmd()
 	_, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
 	require.NoError(err)
+	s.Require().NoError(s.network.WaitForNextBlock())
 
 	// delegate 500 tokens to validator2
 	args = []string{
@@ -94,6 +97,7 @@ func (s *WithdrawAllTestSuite) TestNewWithdrawAllRewardsGenerateOnly() {
 	}
 	_, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
 	require.NoError(err)
+	s.Require().NoError(s.network.WaitForNextBlock())
 
 	args = []string{
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, newAddr.String()),
@@ -106,6 +110,7 @@ func (s *WithdrawAllTestSuite) TestNewWithdrawAllRewardsGenerateOnly() {
 	cmd = cli.NewWithdrawAllRewardsCmd()
 	out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
 	require.NoError(err)
+	s.Require().NoError(s.network.WaitForNextBlock())
 	// expect 2 transactions in the generated file when --max-msgs in a tx set 1.
 	s.Require().Equal(2, len(strings.Split(strings.Trim(out.String(), "\n"), "\n")))
 
@@ -120,6 +125,7 @@ func (s *WithdrawAllTestSuite) TestNewWithdrawAllRewardsGenerateOnly() {
 	cmd = cli.NewWithdrawAllRewardsCmd()
 	out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
 	require.NoError(err)
+	s.Require().NoError(s.network.WaitForNextBlock())
 	// expect 1 transaction in the generated file when --max-msgs in a tx set 2, since there are only delegations.
 	s.Require().Equal(1, len(strings.Split(strings.Trim(out.String(), "\n"), "\n")))
 }

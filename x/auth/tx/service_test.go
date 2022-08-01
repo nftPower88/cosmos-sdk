@@ -122,8 +122,7 @@ func (s *IntegrationTestSuite) TestQueryBySig() {
 	s.Require().NoError(err)
 
 	// Wait for tx to be included
-	latestHeight, _ := s.network.LatestHeight()
-	s.network.WaitForHeight(latestHeight + 1)
+	s.network.WaitForNextBlock()
 
 	// get the signature out of the builder
 	sigs, err := txb.GetTx().GetSignaturesV2()

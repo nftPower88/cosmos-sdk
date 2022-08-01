@@ -177,6 +177,8 @@ func (s *IntegrationTestSuite) TestCmdGetFeeGrant() {
 			cmd := cli.GetCmdQueryFeeGrant()
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
 
+			s.Require().NoError(s.network.WaitForNextBlock())
+
 			if tc.expectErr {
 				s.Require().Error(err)
 				s.Require().Contains(err.Error(), tc.expectErrMsg)
@@ -591,6 +593,8 @@ func (s *IntegrationTestSuite) TestNewCmdFeeGrant() {
 		s.Run(tc.name, func() {
 			cmd := cli.NewCmdFeeGrant()
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+
+			s.Require().NoError(s.network.WaitForNextBlock())
 
 			if tc.expectErr {
 				s.Require().Error(err)

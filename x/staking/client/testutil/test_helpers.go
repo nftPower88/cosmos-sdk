@@ -33,7 +33,7 @@ func MsgRedelegateExec(clientCtx client.Context, from, src, dst, amount fmt.Stri
 }
 
 // MsgUnbondExec creates a unbond message.
-func MsgUnbondExec(clientCtx client.Context, from fmt.Stringer, valAddress,
+func MsgUnbondExec(s *IntegrationTestSuite, clientCtx client.Context, from fmt.Stringer, valAddress,
 	amount fmt.Stringer, extraArgs ...string,
 ) (testutil.BufferWriter, error) {
 	args := []string{
@@ -44,5 +44,7 @@ func MsgUnbondExec(clientCtx client.Context, from fmt.Stringer, valAddress,
 
 	args = append(args, commonArgs...)
 	args = append(args, extraArgs...)
-	return clitestutil.ExecTestCLICmd(clientCtx, stakingcli.NewUnbondCmd(), args)
+	out, err := clitestutil.ExecTestCLICmd(clientCtx, stakingcli.NewUnbondCmd(), args)
+	s.network.WaitForNextBlock()
+	return out, err
 }

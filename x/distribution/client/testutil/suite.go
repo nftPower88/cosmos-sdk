@@ -518,6 +518,7 @@ func (s *IntegrationTestSuite) TestNewWithdrawRewardsCmd() {
 
 			_, _ = s.network.WaitForHeightWithTimeout(10, time.Minute)
 			bz, err := MsgWithdrawDelegatorRewardExec(clientCtx, tc.valAddr, tc.args...)
+			s.Require().NoError(s.network.WaitForNextBlock())
 			if tc.expectErr {
 				s.Require().Error(err)
 			} else {
@@ -685,6 +686,7 @@ func (s *IntegrationTestSuite) TestNewSetWithdrawAddrCmd() {
 			clientCtx := val.ClientCtx
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			s.Require().NoError(s.network.WaitForNextBlock())
 			if tc.expectErr {
 				s.Require().Error(err)
 			} else {

@@ -76,16 +76,15 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	unbondingAmount := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(5))
 	// unbonding the amount
-	out, err = MsgUnbondExec(val.ClientCtx, val.Address, val.ValAddress, unbondingAmount)
+	out, err = MsgUnbondExec(s, val.ClientCtx, val.Address, val.ValAddress, unbondingAmount)
 	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txRes))
-	s.Require().Equal(uint32(0), txRes.Code)
+	// s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txRes))
+	// s.Require().Equal(uint32(0), txRes.Code)
+	s.Require().Equal(1, len(strings.Split(strings.Trim(out.String(), "\n"), "\n")))
 	// unbonding the amount
-	out, err = MsgUnbondExec(val.ClientCtx, val.Address, val.ValAddress, unbondingAmount)
+	out, err = MsgUnbondExec(s, val.ClientCtx, val.Address, val.ValAddress, unbondingAmount)
 	s.Require().NoError(err)
-	s.Require().NoError(err)
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txRes))
-	s.Require().Equal(uint32(0), txRes.Code)
+	s.Require().Equal(1, len(strings.Split(strings.Trim(out.String(), "\n"), "\n")))
 
 	err = s.network.WaitForNextBlock()
 	s.Require().NoError(err)
@@ -217,6 +216,9 @@ func (s *IntegrationTestSuite) TestNewCreateValidatorCmd() {
 			clientCtx := val.ClientCtx
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+
+			s.Require().NoError(s.network.WaitForNextBlock())
+
 			if tc.expectErr {
 				require.Error(err)
 			} else {
@@ -270,6 +272,9 @@ func (s *IntegrationTestSuite) TestGetCmdQueryValidator() {
 			cmd := cli.GetCmdQueryValidator()
 			clientCtx := val.ClientCtx
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+
+			s.Require().NoError(s.network.WaitForNextBlock())
+
 			if tc.expectErr {
 				s.Require().Error(err)
 				s.Require().NotEqual("internal", err.Error())
@@ -314,7 +319,6 @@ func (s *IntegrationTestSuite) TestGetCmdQueryValidators() {
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			s.Require().NoError(err)
-
 			var result types.QueryValidatorsResponse
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &result))
 			s.Require().Equal(tc.minValidatorCount, len(result.Validators))
@@ -378,6 +382,8 @@ func (s *IntegrationTestSuite) TestGetCmdQueryDelegation() {
 			clientCtx := val.ClientCtx
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			s.Require().NoError(s.network.WaitForNextBlock())
+
 			if tc.expErr {
 				s.Require().Error(err)
 			} else {
@@ -434,6 +440,9 @@ func (s *IntegrationTestSuite) TestGetCmdQueryDelegations() {
 			clientCtx := val.ClientCtx
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+
+			s.Require().NoError(s.network.WaitForNextBlock())
+
 			if tc.expErr {
 				s.Require().Error(err)
 			} else {
@@ -490,6 +499,9 @@ func (s *IntegrationTestSuite) TestGetCmdQueryValidatorDelegations() {
 			clientCtx := val.ClientCtx
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+
+			s.Require().NoError(s.network.WaitForNextBlock())
+
 			if tc.expErr {
 				s.Require().Error(err)
 			} else {
@@ -534,6 +546,8 @@ func (s *IntegrationTestSuite) TestGetCmdQueryUnbondingDelegations() {
 			clientCtx := val.ClientCtx
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+
+			s.Require().NoError(s.network.WaitForNextBlock())
 
 			if tc.expErr {
 				s.Require().Error(err)
@@ -603,7 +617,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryUnbondingDelegation() {
 				s.Require().NoError(err)
 				s.Require().Equal(ubd.DelegatorAddress, val.Address.String())
 				s.Require().Equal(ubd.ValidatorAddress, val.ValAddress.String())
-				s.Require().Len(ubd.Entries, 2)
+				s.Require().Len(ubd.Entries, 1)
 			}
 		})
 	}
@@ -642,6 +656,8 @@ func (s *IntegrationTestSuite) TestGetCmdQueryValidatorUnbondingDelegations() {
 			clientCtx := val.ClientCtx
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+
+			s.Require().NoError(s.network.WaitForNextBlock())
 
 			if tc.expErr {
 				s.Require().Error(err)
@@ -691,6 +707,8 @@ func (s *IntegrationTestSuite) TestGetCmdQueryRedelegations() {
 			clientCtx := val.ClientCtx
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+
+			s.Require().NoError(s.network.WaitForNextBlock())
 
 			if tc.expErr {
 				s.Require().Error(err)
@@ -768,6 +786,8 @@ func (s *IntegrationTestSuite) TestGetCmdQueryRedelegation() {
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
 
+			s.Require().NoError(s.network.WaitForNextBlock())
+
 			if tc.expErr {
 				s.Require().Error(err)
 			} else {
@@ -820,6 +840,8 @@ func (s *IntegrationTestSuite) TestGetCmdQueryValidatorRedelegations() {
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
 
+			s.Require().NoError(s.network.WaitForNextBlock())
+
 			if tc.expErr {
 				s.Require().Error(err)
 			} else {
@@ -869,6 +891,8 @@ func (s *IntegrationTestSuite) TestGetCmdQueryHistoricalInfo() {
 			cmd := cli.GetCmdQueryHistoricalInfo()
 			clientCtx := val.ClientCtx
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+
+			s.Require().NoError(s.network.WaitForNextBlock())
 
 			if tc.error {
 				s.Require().Error(err)
@@ -1058,6 +1082,9 @@ func (s *IntegrationTestSuite) TestNewEditValidatorCmd() {
 			clientCtx := val.ClientCtx
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+
+			s.Require().NoError(s.network.WaitForNextBlock())
+
 			if tc.expectErr {
 				s.Require().Error(err)
 			} else {
@@ -1143,6 +1170,9 @@ func (s *IntegrationTestSuite) TestNewDelegateCmd() {
 			clientCtx := val.ClientCtx
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+
+			s.Require().NoError(s.network.WaitForNextBlock())
+
 			if tc.expectErr {
 				s.Require().Error(err)
 			} else {
@@ -1229,6 +1259,9 @@ func (s *IntegrationTestSuite) TestNewRedelegateCmd() {
 			clientCtx := val.ClientCtx
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+
+			s.Require().NoError(s.network.WaitForNextBlock())
+
 			if tc.expectErr {
 				s.Require().Error(err)
 			} else {
@@ -1296,6 +1329,9 @@ func (s *IntegrationTestSuite) TestNewUnbondCmd() {
 			clientCtx := val.ClientCtx
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+
+			s.Require().NoError(s.network.WaitForNextBlock())
+
 			if tc.expectErr {
 				s.Require().Error(err)
 			} else {
@@ -1395,6 +1431,8 @@ func (s *IntegrationTestSuite) TestNewCancelUnbondingDelegationCmd() {
 		tc := tc
 
 		s.Run(tc.name, func() {
+			s.Require().NoError(s.network.WaitForNextBlock())
+
 			cmd := cli.NewCancelUnbondingDelegation()
 			clientCtx := val.ClientCtx
 			if !tc.expectErr && tc.expectedCode != sdkerrors.ErrNotFound.ABCICode() {
@@ -1415,6 +1453,7 @@ func (s *IntegrationTestSuite) TestNewCancelUnbondingDelegationCmd() {
 			}
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+
 			if tc.expectErr {
 				s.Require().Error(err)
 			} else {
@@ -1518,6 +1557,8 @@ func (s *IntegrationTestSuite) TestEditValidatorMoniker() {
 	})
 	require.NoError(err)
 
+	s.Require().NoError(s.network.WaitForNextBlock())
+
 	queryCmd := cli.GetCmdQueryValidator()
 	res, err := clitestutil.ExecTestCLICmd(
 		val.ClientCtx, queryCmd,
@@ -1537,6 +1578,7 @@ func (s *IntegrationTestSuite) TestEditValidatorMoniker() {
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	})
 	require.NoError(err)
+	s.Require().NoError(s.network.WaitForNextBlock())
 
 	res, err = clitestutil.ExecTestCLICmd(
 		val.ClientCtx, queryCmd,

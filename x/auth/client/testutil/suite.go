@@ -490,6 +490,7 @@ func (s *IntegrationTestSuite) TestCLIQueryTxCmdByHash() {
 			clientCtx := val.ClientCtx
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			s.Require().NoError(s.network.WaitForNextBlock())
 
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -1554,6 +1555,7 @@ func (s *IntegrationTestSuite) TestSignWithMultiSignersAminoJSON() {
 	)
 
 	require.NoError(err)
+	s.Require().NoError(s.network.WaitForNextBlock())
 	var txRes sdk.TxResponse
 	require.NoError(val0.ClientCtx.Codec.UnmarshalJSON(res.Bytes(), &txRes))
 	require.Equal(uint32(0), txRes.Code, txRes.RawLog)
