@@ -121,6 +121,10 @@ func (s *IntegrationTestSuite) TestQueryBySig() {
 	_, err = s.queryClient.BroadcastTx(context.Background(), &tx.BroadcastTxRequest{TxBytes: txbz, Mode: tx.BroadcastMode_BROADCAST_MODE_SYNC})
 	s.Require().NoError(err)
 
+	// Wait for tx to be included
+	latestHeight, _ := s.network.LatestHeight()
+	s.network.WaitForHeight(latestHeight + 1)
+
 	// get the signature out of the builder
 	sigs, err := txb.GetTx().GetSignaturesV2()
 	s.Require().NoError(err)
