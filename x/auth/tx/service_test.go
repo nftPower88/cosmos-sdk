@@ -518,7 +518,7 @@ func (s IntegrationTestSuite) TestBroadcastTx_GRPC() {
 		{"empty request", &tx.BroadcastTxRequest{}, true, "invalid empty tx"},
 		{"no mode", &tx.BroadcastTxRequest{
 			TxBytes: txBytes,
-		}, true, "supported types: sync, async, block"},
+		}, true, "supported types: sync, async"},
 		{"valid request", &tx.BroadcastTxRequest{
 			Mode:    tx.BroadcastMode_BROADCAST_MODE_SYNC,
 			TxBytes: txBytes,
@@ -555,7 +555,7 @@ func (s IntegrationTestSuite) TestBroadcastTx_GRPCGateway() {
 		expErrMsg string
 	}{
 		{"empty request", &tx.BroadcastTxRequest{}, true, "invalid empty tx"},
-		{"no mode", &tx.BroadcastTxRequest{TxBytes: txBytes}, true, "supported types: sync, async, block"},
+		{"no mode", &tx.BroadcastTxRequest{TxBytes: txBytes}, true, "supported types: sync, async"},
 		{"valid request", &tx.BroadcastTxRequest{
 			Mode:    tx.BroadcastMode_BROADCAST_MODE_SYNC,
 			TxBytes: txBytes,
